@@ -69,7 +69,7 @@ return {
             }
         },
         ["vehicletheft"] = {
-            tencode = '10-59',
+            tencode = '487',
             title = locale('title.vehicletheft'),
             description = locale('tencodes.vehicletheft'),
             jobs = { jobs = { 'police', 'sheriff' }, types = { 'leo' } },
@@ -103,7 +103,7 @@ return {
             },
         },
         ["driveby"] = {
-            tencode = '10-31',
+            tencode = '10-13',
             title = locale('title.driveby'),
             description = locale('tencodes.driveby'),
             name = locale('tencodes.driveby'),
@@ -126,7 +126,7 @@ return {
             }
         },
         ["shooting"] = {
-            tencode = '10-31',
+            tencode = '10-13',
             title = locale('title.shooting'),
             description = locale('tencodes.shooting'),
             jobs = { jobs = { 'police', 'sheriff' }, types = { 'leo' } },
@@ -148,7 +148,7 @@ return {
             }
         },
         ["fight"] = {
-            tencode = '10-30',
+            tencode = '10-10',
             title = locale('title.fight'),
             description = locale('tencodes.fight'),
             jobs = { jobs = { 'police', 'sheriff' }, types = { 'leo' } },
@@ -169,11 +169,55 @@ return {
                 ref = "GTAO_FM_Events_Soundset",
             }
         },
+        ["weaponthreat"] = {
+            tencode = '240',
+            title = locale('title.weaponthreat'),
+            description = locale('tencodes.weaponthreat'),
+            jobs = { jobs = { 'police', 'sheriff' }, types = { 'leo' } },
+            blip = {
+                radius = 80.0,
+                color = 69,
+                scale = 1.0,
+                length = 60 * 2,
+                sprite = 567,
+                offset = {
+                    min = 20,
+                    max = 50
+                },
+                flash = false
+            },
+            sound = {
+                name = "Lose_1st",
+                ref = "GTAO_FM_Events_Soundset",
+            }
+        },
+        ["murder"] = {
+            tencode = '187',
+            title = locale('title.murder'),
+            description = locale('tencodes.murder'),
+            jobs = { jobs = { 'police', 'sheriff' }, types = { 'leo' } },
+            blip = {
+                radius = 80.0,
+                color = 69,
+                scale = 1.0,
+                length = 60 * 2,
+                sprite = 303,
+                offset = {
+                    min = 20,
+                    max = 50
+                },
+                flash = false
+            },
+            sound = {
+                name = "Lose_1st",
+                ref = "GTAO_FM_Events_Soundset",
+            }
+        },
         ["death"] = {
-            tencode = '10-30',
+            tencode = '10-52',
             title = locale('title.death'),
             description = locale('tencodes.death'),
-            jobs = { jobs = { 'ambulance' } },
+            jobs = { jobs = { 'police', 'ambulance' } },
             blip = {
                 radius = 100,
                 sprite = 126,
@@ -192,7 +236,7 @@ return {
             }
         },
         ["backup"] = {
-            tencode = '10-20',
+            tencode = '10-32',
             title = locale('title.backup'),
             description = locale('tencodes.backup'),
             jobs = { jobs = { 'police', 'sheriff' }, types = { 'leo' } },
@@ -299,7 +343,7 @@ return {
             }
         },
         ["storerobbery"] = {
-            tencode = '10-40',
+            tencode = '211',
             title = locale('title.storerobbery'),
             description = locale('tencodes.storerobbery'),
             jobs = { jobs = { 'police', 'sheriff' }, types = { 'leo' } },
@@ -318,7 +362,7 @@ return {
             }
         },
         ["bankrobbery"] = {
-            tencode = '10-91',
+            tencode = '211',
             title = locale('title.bankrobbery'),
             description = locale('tencodes.bankrobbery'),
             jobs = { jobs = { 'police', 'sheriff' }, types = { 'leo' } },
@@ -337,7 +381,7 @@ return {
             }
         },
         ["paletorobbery"] = {
-            tencode = '10-91',
+            tencode = '211',
             title = locale('title.paletorobbery'),
             description = locale('tencodes.paletorobbery'),
             jobs = { jobs = { 'police', 'sheriff' }, types = { 'leo' } },
@@ -356,7 +400,7 @@ return {
             }
         },
         ["pacificrobbery"] = {
-            tencode = '10-93',
+            tencode = '211',
             title = locale('title.pacificrobbery'),
             description = locale('tencodes.pacificrobbery'),
             jobs = { jobs = { 'police', 'sheriff' }, types = { 'leo' } },
@@ -394,7 +438,7 @@ return {
             }
         },
         ["jewelryrobbery"] = {
-            tencode = '10-92',
+            tencode = '211',
             title = locale('title.jewelryrobbery'),
             description = locale('tencodes.jewelryrobbery'),
             jobs = { jobs = { 'police', 'sheriff' }, types = { 'leo' } },
@@ -454,16 +498,16 @@ return {
             }
         },
         ["carboosting"] = {
-            tencode = '10-58',
+            tencode = '502',
             title = locale('tencodes.carboosting'),
             description = locale('tencodes.carboosting'),
             jobs = { jobs = { 'police', 'sheriff' }, types = { 'leo' } },
             blip = {
                 radius = 0,
-                sprite = 595,
+                sprite = 380,
                 color = 60,
                 scale = 1.5,
-                length = 60 * 2,
+                length = 30 * 2,
                 offset = false,
                 flash = false
             },

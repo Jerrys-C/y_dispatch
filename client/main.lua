@@ -36,7 +36,15 @@ function GetVehicleData(vehicle)
     Data.id = NetworkGetNetworkIdFromEntity(vehicle)
     Data.speed = GetEntitySpeed(vehicle)
     Data.name = GetLabelText(GetDisplayNameFromVehicleModel(GetEntityModel(vehicle)))
-    Data.name = Data.name == 'NULL' and exports.qbx_core:GetVehiclesByName().Vehicles[model].name or Data.name
+    local vehiclesData = exports.qbx_core:GetVehiclesByName()
+    if vehiclesData and vehiclesData.Vehicles and vehiclesData.Vehicles[model] then
+        Data.name = Data.name == 'NULL' and vehiclesData.Vehicles[model].name or Data.name
+    else
+        Data.name = 'Unknown'
+        -- 处理错误情况，例如提供一个默认值或跳过该逻辑
+    end
+
+    -- Data.name = Data.name == 'NULL' and exports.qbx_core:GetVehiclesByName().Vehicles[model].name or Data.name
 
     local primary, secondary = GetVehicleColours(vehicle)
     local color1, color2 = locale('colors.' .. primary), locale('colors.' .. secondary)
@@ -103,7 +111,7 @@ local fightAntiSpam = false
 local function fight(ped)
     if ped ~= cache.ped then return end
 
-    if CheckJob(config.events.fight.jobwhitelist, QBX.PlayerData.job) and QBX.PlayerData.job.onduty then return end
+    if CheckJob(config.events.fight.jobwhitelist, QBX.PlayerData.job) then return end
 
     fightAntiSpam = true
     exports.y_dispatch:Fight()
@@ -113,12 +121,19 @@ local function fight(ped)
 end
 
 local shotsfiredAntiSpam = false
+local byPassWeapons = {
+    ["WEAPON_FIREEXTINGUISHER"] = true,
+    ["WEAPON_SNOWBALL"] = true
+}
 local function shotfired(ped)
     if ped ~= cache.ped then return end
+    for k, _ in pairs(byPassWeapons) do
+        if cache.weapon == GetHashKey(k) then return end
+    end
     if IsPedCurrentWeaponSilenced(ped) and math.random() <= 0.98 then return end
     -- 2% chance to trigger the event if the weapon is silenced, ( real life weapons are not 100% silent ;c )
 
-    if CheckJob(config.events.shotsfired.jobwhitelist, QBX.PlayerData.job) and QBX.PlayerData.job.onduty then return end
+    if CheckJob(config.events.shotsfired.jobwhitelist, QBX.PlayerData.job) then return end
 
     shotsfiredAntiSpam = true
     if cache.vehicle then
@@ -129,6 +144,115 @@ local function shotfired(ped)
     SetTimeout(30 * 1000, function() -- Wait 30 seconds to avoid spam.
         shotsfiredAntiSpam = false
     end)
+end
+
+local recklessAntiSpam = false
+local recklessCheckAntiSpam = false
+local recklessCount = 0
+local resetTimer = nil
+local byPassVehicleClasses = {
+    [14] = true,
+    [15] = true,
+    [16] = true,
+    [21] = true
+}
+local function resetRecklessCount()
+    recklessCount = 0
+    resetTimer = nil
+end
+local function recklessDriver(ped)
+    if recklessCheckAntiSpam then return end
+    if ped ~= cache.ped then return end
+
+    -- if CheckJob(config.events.recklessDriver.jobwhitelist, QBX.PlayerData.job) and QBX.PlayerData.job.onduty then return end
+    if cache.vehicle then
+        recklessCheckAntiSpam = true
+        SetTimeout(5000, function() recklessCheckAntiSpam = false end)
+        if IsVehicleSirenOn(cache.vehicle) then return end
+        if byPassVehicleClasses[GetVehicleClass(cache.vehicle)] then return end
+
+        recklessCount = recklessCount + 1
+
+        if resetTimer == nil then
+            -- 如果没有计时器，设置一个60秒后重置计数
+            SetTimeout(30 * 1000, resetRecklessCount)
+            resetTimer = true
+        end
+
+        if recklessCount >= 2 and not recklessAntiSpam then
+            recklessAntiSpam = true
+            exports.y_dispatch:CarBoosting(cache.vehicle)
+            SetTimeout(30 * 1000, function() -- Wait 30 seconds to avoid spam.
+                recklessAntiSpam = false
+            end)
+        end
+    end
+end
+
+
+local carJackAntiSpam = false
+local getInVehicleTimeOut = 10000
+local function carJacking(ped)
+    if ped ~= cache.ped then return end
+    carJackAntiSpam = true
+    getInVehicleTimeOut = 10000
+
+    -- if CheckJob(config.events.carjacking.jobwhitelist, QBX.PlayerData.job) and QBX.PlayerData.job.onduty then return end
+
+    -- check player entered a vehicle
+    while getInVehicleTimeOut > 0 do
+        Wait(1000)
+
+        if cache.vehicle then
+            exports.y_dispatch:CarJacking(cache.vehicle)
+            SetTimeout(30 * 1000, function() -- Wait 30 seconds to avoid spam.
+                carJackAntiSpam = false
+            end)
+            break
+        end
+        getInVehicleTimeOut = getInVehicleTimeOut - 1000
+    end
+
+end
+
+local weaponThreatAntiSpam = false
+local function weaponThreat(ped)
+    if ped ~= cache.ped then return end
+
+    if CheckJob(config.events.weaponthreat.jobwhitelist, QBX.PlayerData.job) then return end
+
+    weaponThreatAntiSpam = true
+    exports.y_dispatch:WeaponThreat()
+    SetTimeout(30 * 1000, function() -- Wait 30 seconds to avoid spam.
+        weaponThreatAntiSpam = false
+    end)
+end
+
+local vehicleTheftAntiSpam = false
+local function vehicleTheft(ped)
+    if ped ~= cache.ped then return end
+
+    -- if CheckJob(config.events.vehicleTheft.jobwhitelist, QBX.PlayerData.job) then return end
+    if cache.vehicle then
+        vehicleTheftAntiSpam = true
+        exports.y_dispatch:VehicleTheft(cache.vehicle)
+        SetTimeout(30 * 1000, function() -- Wait 30 seconds to avoid spam.
+            vehicleTheftAntiSpam = false
+        end)
+    end
+end
+
+local murderAntiSpam = false
+local function murder(ped)
+    if ped ~= cache.ped then return end
+
+    -- if CheckJob(config.events.murder.jobwhitelist, QBX.PlayerData.job) then return end
+    murderAntiSpam = true
+    exports.y_dispatch:Murder()
+    SetTimeout(30 * 1000, function() -- Wait 30 seconds to avoid spam.
+        murderAntiSpam = false
+    end)
+
 end
 
 --- Checks if the player's job is in the jobs table
@@ -276,6 +400,42 @@ AddEventHandler('CEventShockingGunshotFired', function(_, ped, _)
     if not config.events.shotsfired.enabled then return end
     if shotsfiredAntiSpam then return end
     shotfired(ped)
+end)
+
+AddEventHandler("CEventShockingMadDriverExtreme",function(_, ped, _)
+    -- if not config.events.recklessDriver.enabled then return end
+    if recklessAntiSpam then return end
+    recklessDriver(ped)
+end)
+
+AddEventHandler("CEventPedJackingMyVehicle", function(_, ped, _)
+    -- if not config.events.carjacking.enabled then return end
+    if carJackAntiSpam then return end
+    carJacking(ped)
+end)
+
+AddEventHandler("CEventShockingWeaponThreat", function(_, ped, _)
+    -- if not config.events.weaponThreat.enabled then return end
+    if weaponThreatAntiSpam then return end
+    weaponThreat(ped)
+end)
+
+AddEventHandler("CEventShockingPedRunOver", function(_, ped, _)
+    -- if not config.events.recklessDriver.enabled then return end
+    if recklessAntiSpam then return end
+    recklessDriver(ped)
+end)
+
+AddEventHandler("CEventShockingSeenCarStolen", function(_, ped, _)
+    -- if not config.events.vehicleTheft.enabled then return end
+    if vehicleTheftAntiSpam or carJackAntiSpam then return end
+    vehicleTheft(ped)
+end)
+
+AddEventHandler("CEventShockingSeenPedKilled", function(_, ped, _)
+    -- if not config.events.fight.enabled then return end
+    if murderAntiSpam then return end
+    murder(ped)
 end)
 
 --- Removes a blip from the map
