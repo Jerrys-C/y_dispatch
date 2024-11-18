@@ -78,7 +78,7 @@ local function DriveBy(vehicle)
         class = vehdata.class,
         plate = vehdata.plate,
         gender = GetGender(),
-        weapon = math.random() <= 0.5 and exports.ox_inventory:getCurrentWeapon()?.label or locale("general.unknown"),
+        weapon = math.random() <= 0.5 and (exports.ox_inventory:getCurrentWeapon() and exports.ox_inventory:getCurrentWeapon().label) or locale("general.unknown"),
         weaponclass = GetWeaponClass(cache.weapon) or nil,
         automatic = math.random() <= 0.5 and (automatics[GetWeapontypeGroup(cache.weapon)] or automatics[cache.weapon]) or false,
         doors = vehdata.doors,
@@ -115,7 +115,7 @@ local function Fight()
     local data = {
         tencodeid = "fight",
         tencode = tenCodes["fight"].tencode,
-        firstStreet = locationInfo,
+        location = GetLocation(GetEntityCoords(cache.ped)),
         gender = GetGender(),
         type = 0,
         coords = GetEntityCoords(cache.ped),
@@ -125,6 +125,40 @@ local function Fight()
     TriggerServerEvent("y_dispatch:server:AddCall", data)
 end
 exports('Fight', Fight)
+
+local function WeaponThreat()
+    local data = {
+        tencodeid = "weaponthreat",
+        tencode = tenCodes["weaponthreat"].tencode,
+        location = GetLocation(GetEntityCoords(cache.ped)),
+        gender = GetGender(),
+        weapon = math.random() <= 0.5 and exports.ox_inventory:getCurrentWeapon()?.label or locale("general.unknown"),
+        weaponclass = GetWeaponClass(cache.weapon) or nil,
+        type = 0,
+        coords = GetEntityCoords(cache.ped),
+        title = tenCodes["weaponthreat"].title,
+        jobs = tenCodes["weaponthreat"].jobs
+    }
+    TriggerServerEvent("y_dispatch:server:AddCall", data)
+end
+exports('WeaponThreat', WeaponThreat)
+
+local function Murder()
+    local data = {
+        tencodeid = "murder",
+        tencode = tenCodes["murder"].tencode,
+        location = GetLocation(GetEntityCoords(cache.ped)),
+        gender = GetGender(),
+        weapon = math.random() <= 0.5 and exports.ox_inventory:getCurrentWeapon()?.label or locale("general.unknown"),
+        weaponclass = GetWeaponClass(cache.weapon) or nil,
+        type = 0,
+        coords = GetEntityCoords(cache.ped),
+        title = tenCodes["murder"].title,
+        jobs = tenCodes["murder"].jobs
+    }
+    TriggerServerEvent("y_dispatch:server:AddCall", data)
+end
+exports('Murder', Murder)
 
 local function InjuriedPerson()
     local data = {
@@ -149,7 +183,7 @@ function EmergencyCall(message, phonenumber, anonymous)
         gender = GetGender(),
         type = 0,
         coords = GetEntityCoords(cache.ped),
-        name = not anonymous and QBX.PlayerData.charinfo.lastname .. " " .. QBX.PlayerData.charinfo.firstname,
+        name = not anonymous and QBX.PlayerData.charinfo.firstname .. " " .. QBX.PlayerData.charinfo.lastname,
         number = not anonymous and QBX.PlayerData.charinfo.phone,
         information = message,
         title = tenCodes[phonenumber.."call"].title,
@@ -171,8 +205,8 @@ local function Code99(servicetype)
         tencodeid = service,
         tencode = tenCodes[service].tencode,
         location = GetLocation(GetEntityCoords(cache.ped)),
-        name = QBX.PlayerData.charinfo.lastname .. " " .. QBX.PlayerData.charinfo.firstname,
-        callsign = QBX.PlayerData.metadata.callsign,
+        name = QBX.PlayerData.charinfo.firstname .. " " .. QBX.PlayerData.charinfo.lastname,
+        -- callsign = QBX.PlayerData.metadata.callsign,
         type = 1,
         coords = GetEntityCoords(cache.ped),
         title = tenCodes[service].title,
@@ -187,8 +221,8 @@ local function Backup()
         tencodeid = "backup",
         tencode = tenCodes.backup.tencode,
         location = GetLocation(GetEntityCoords(cache.ped)),
-        name = QBX.PlayerData.charinfo.lastname .. " " .. QBX.PlayerData.charinfo.firstname,
-        callsign = QBX.PlayerData.metadata.callsign,
+        name = QBX.PlayerData.charinfo.firstname .. " " .. QBX.PlayerData.charinfo.lastname,
+        -- callsign = QBX.PlayerData.metadata.callsign,
         type = 0,
         coords = GetEntityCoords(cache.ped),
         title = tenCodes.backup.title,
@@ -263,7 +297,7 @@ local function TruckRobbery(coords)
 end exports('TruckRobbery', TruckRobbery)
 
 local function FleecaBankRobbery(coords, camId)
-    print('HEY')
+    -- print('HEY')
     local data = {
         tencodeid = "bankrobbery",
         tencode = tenCodes["bankrobbery"].tencode,
@@ -313,14 +347,14 @@ exports('PacificBankRobbery', PacificBankRobbery)
 local function JewelryRobbery(camId)
     local data = {
         tencodeid = "jewelryrobbery",
-        tencode = tenCodes["JewelryRobbery"].tencode,
+        tencode = tenCodes["jewelryrobbery"].tencode,
         location = GetLocation(GetEntityCoords(cache.ped)),
         gender = GetGender(),
         camId = camId,
         type = 0,
         coords = GetEntityCoords(cache.ped),
-        title = tenCodes["JewelryRobbery"].title,
-        jobs = tenCodes["JewelryRobbery"].jobs
+        title = tenCodes["jewelryrobbery"].title,
+        jobs = tenCodes["jewelryrobbery"].jobs
     }
     TriggerServerEvent("y_dispatch:server:AddCall", data)
 end
@@ -364,7 +398,7 @@ local function CarBoosting(vehicle)
         heading = qbx.getCardinalDirection(),
         gender = GetGender(),
         model = vehData.name,
-        class = vehdata.class,
+        class = vehData.class,
         plate = vehData.plate,
         type = 0,
         color = vehData.color,
